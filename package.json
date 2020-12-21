@@ -1,11 +1,18 @@
 {
   "name": "global-node-cache",
   "version": "1.0.0",
-  "description": "",
+  "description": "store data or class to global/local cache variable",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "base-64": "^1.0.0",
+    "x-utils-es": "^1.5.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.16.0"
+  }
 }
