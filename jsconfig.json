@@ -1,0 +1,19 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "sourceMap": false,
+    "checkJs":true,
+    "moduleResolution": "node",
+    "module": "es2015",
+    "target": "esnext", 
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true, 
+    "baseUrl": "."
+  },
+  "paths": {
+    "*": ["node_modules/*"]
+  },
+  "include": ["libs"],
+  "exclude": ["node_modules", "dist"]
+}
