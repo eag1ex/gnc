@@ -5,7 +5,7 @@
     "checkJs":false,
     "moduleResolution": "node",
     "module": "commonJS",
-    "target": "es6",
+    "target": "esnext",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true, 
