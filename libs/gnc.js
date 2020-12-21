@@ -103,9 +103,8 @@ module.exports = () => {
             if(!nRef) return undefined
             if(this.gncStore[name]){
                 if(this.gncStore[name][nRef]) return this.gncStore[name][nRef]
-            } else{
-                return undefined
             }
+            return undefined
         }
     }
 }
