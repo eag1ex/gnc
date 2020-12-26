@@ -21,6 +21,16 @@ module.exports = () => {
             return this._gncStore
         }
 
+        shakeGncStore(name,ref){
+
+            // TODO extract all timestamps, and select oldes then delete from bottom up, up to keepInScope, keepPerScope
+            let timestamps = Object.entries(this._gncStore).reduce((n, [k, val], inx, all) => {
+                let [_ref,] = Object.entries(val)
+            })
+            // this.settings.keepInScope
+            // this.settings.keepPerScope
+        }
+
         /** 
          * @setCacheStoreType
          * - get data from gncStore and assign it to relevent cacheType set in opts
@@ -45,14 +55,14 @@ module.exports = () => {
 
                         if (!global.GNC[name]) {
                             let data = this.gncStore[name][nRef]
-                            global.GNC[name] = { [nRef]: data }
+                            global.GNC[name] = { [nRef]: { ...data} }
                             typeSet = 'GLOBAL'
                             break
                         }
 
                         if (global.GNC[name]) {
                             let data = this.gncStore[name][nRef]
-                            global.GNC[name][nRef] = data
+                            global.GNC[name][nRef] = { ...data} 
                             typeSet = 'GLOBAL'
                         }
 
@@ -117,7 +127,7 @@ module.exports = () => {
             // set new cache scope
             if (!this.gncStore[name]) {
                 this.gncStore[name] = {
-                    [nRef]: data
+                    [nRef]: {data,timestamp:this.timestamp()}
                 }
 
                 this.gncStore = Object.assign({}, this.gncStore)
@@ -131,7 +141,7 @@ module.exports = () => {
 
             // update cache scope
             if (this.gncStore[name]) {
-                this.gncStore[name][nRef] = data
+                this.gncStore[name][nRef] = {data,timestamp:this.timestamp()}
                 this.gncStore = Object.assign({}, this.gncStore)
 
                 if (this.setCacheStoreType(name, nRef).length < 1) {
@@ -167,7 +177,7 @@ module.exports = () => {
                 if (this.gncStore[name]) {
                     if (this.gncStore[name][nRef]) {
                         if (this.debug) log(`[getCache]','available for name: ${name}[ref]`)
-                        return this.gncStore[name][nRef]
+                        return this.gncStore[name][nRef].data
                     }
                 }
                 return undefined
@@ -177,7 +187,7 @@ module.exports = () => {
                 if (global.GNC[name]) {
                     if (global.GNC[name][nRef]) {
                         if (this.debug) log(`[getCache]','available for name: ${name}[ref]`)
-                        return global.GNC[name][nRef]
+                        return global.GNC[name][nRef].data
                     }
                 }
                 return undefined

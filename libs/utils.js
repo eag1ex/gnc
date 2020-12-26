@@ -26,7 +26,7 @@ exports.sortObject = (obj = {}) => {
 */
 exports.getGlobal = (name, ref) => {
     try {
-        return global['GNC'][name][ref] 
+        return global['GNC'][name][ref].data
     } catch (err) {
         return undefined
     }

@@ -7,7 +7,13 @@ module.exports = () => {
 
             this.debug = debug
             this._gncStore = {}
+
             this.settings = {
+                
+                // to not overload the system only keep totals of data, to be updated on every change 
+                keepPerTotal: opts.keepInTotal=== undefined || 5, // how many items to keep in total
+                keepPerScope: opts.keepInScope === undefined || 5, // how many items to keep per scope
+
                 /** 
                  * `when GLOBAL`, we save cache data to node global variable, this option is more flexible but less secure
                  * `when LOCAL`, we save cache to LOCAL variable, this option is more secure but less flexible since we can only access out cache via class instance
@@ -38,6 +44,11 @@ module.exports = () => {
             }
         }
 
+
+  
+
+
+
         /** 
          * make sure name is valid
          * @returns boolean
@@ -57,6 +68,13 @@ module.exports = () => {
             }
             let c = validFN() // must also be a valid conventional function name    
             return a && b && c
+        }
+
+        /** 
+         * @returns {Number} timestamp as number
+        */
+        timestamp(){
+            return new Date().getTime()
         }
 
         /** 
