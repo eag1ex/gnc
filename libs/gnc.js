@@ -4,7 +4,7 @@
  * - store subsequent access to same data
 */
 module.exports = () => {
-    const { log, onerror, warn } = require('x-utils-es/umd')
+    const { log, onerror, warn, isFalsy } = require('x-utils-es/umd')
     const Libs = require('./gnc.libs')()
     // TODO add data expiry and max slots per scoped items, to help with maintaining memory efficiency
 
@@ -13,91 +13,23 @@ module.exports = () => {
             super(opts, debug)
         }
 
-        set gncStore(v) {
-            this._gncStore = v
-        }
-
-        get gncStore() {
-            return this._gncStore
-        }
-
-        shakeGncStore(name,ref){
-
-            // TODO extract all timestamps, and select oldes then delete from bottom up, up to keepInScope, keepPerScope
-            let timestamps = Object.entries(this._gncStore).reduce((n, [k, val], inx, all) => {
-                let [_ref,] = Object.entries(val)
-            })
-            // this.settings.keepInScope
-            // this.settings.keepPerScope
-        }
-
-        /** 
-         * @setCacheStoreType
-         * - get data from gncStore and assign it to relevent cacheType set in opts
-         * @returns {Array} single array if type that was set, either ['LOCAL'] OR ['GLOBAL']
-        */
-        setCacheStoreType(name, nRef) {
-            let cacheStoreTypes = [this.settings.storeType === 'LOCAL' ? 'LOCAL' : null,
-                this.settings.storeType === 'GLOBAL' ? 'GLOBAL' : null]
-                .filter(n => !!n)
-
-            let forSwitch = (type) => {
-                let typeSet
-                switch (type) {
-                    case 'LOCAL': {
-                        // no need we already keep record in `get gncStore`
-                        typeSet = 'LOCAL'
-                        break
-                    }
-                    // copy data from LOCAL to GLOBAL
-                    case 'GLOBAL': {
-                        if (!global.GNC) global.GNC = {}
-
-                        if (!global.GNC[name]) {
-                            let data = this.gncStore[name][nRef]
-                            global.GNC[name] = { [nRef]: { ...data} }
-                            typeSet = 'GLOBAL'
-                            break
-                        }
-
-                        if (global.GNC[name]) {
-                            let data = this.gncStore[name][nRef]
-                            global.GNC[name][nRef] = { ...data} 
-                            typeSet = 'GLOBAL'
-                        }
-
-                        break
-                    }
-                    default:
-                        onerror('[setCacheStoreType]', `not supported StoreType: ${type} provided`)
-                }
-                return typeSet
-            }
-
-            let ready = []
-            for (let inx = 0; inx < cacheStoreTypes.length; inx++) {
-                let d = forSwitch(cacheStoreTypes[inx])
-                ready.push(d)
-            }
-
-            return ready.filter(n => !!n)
-        }
+      
 
         /** 
          * set your new cache to variable
-         * @param {String} name the name of this cache, usualy best to call it name of the function its used in
-         * @param {JSON/String} ref this param is usualy what was needed to achieve particular data output, for example when in functional methods with properties, and overtime we used the same properties< that would result in the same output
+         * @param {String} scopeName the name of this cache, usualy best to call it name of the function its used in
+         * @param {JSON/String} propsRef this param is usualy what was needed to achieve particular data output, for example when in functional methods with properties, and overtime we used the same properties< that would result in the same output
          * @param {*} data any data except: undefined
          * @returns {boolean} true/false, when succesfull returns true, if not errors but data already cached return false
         */
-        $setCache(name = '', ref, data) {
+        $setCache(scopeName = '', propsRef, data) {
 
-            if (!this.validName(name)) {
-                if (this.debug) onerror('[setCache]', 'name invalid, or illegal characters provided, specials allowed: {_:}')
+            if (!this.validName(scopeName)) {
+                if (this.debug) onerror('[setCache]', 'scopeName invalid, or illegal characters provided, specials allowed: {_:}')
                 return false
             }
 
-            let nRef = this.genRef(ref)
+            let nRef = this.genRef(propsRef)
             if (!nRef) return false
 
             if (nRef.length > this.settings.scopedRefMaxLength) {
@@ -112,42 +44,47 @@ module.exports = () => {
 
             // data already exist nothig to set
             if (this.settings.storeType === 'GLOBAL') {
-                if ((global.GNC || {})[name]) {
-                    if ((global.GNC[name] || {})[nRef]) return false
+                if ((global.GNC || {})[scopeName]) {
+                    if ((global.GNC[scopeName] || {})[nRef]) return false
                 }
             }
 
             // data already exist nothig to set
             if (this.settings.storeType === 'LOCAL') {
-                if (this.gncStore[name]) {
-                    if ((this.gncStore[name] || {})[nRef]) return false
+                if (this.gncStore[scopeName]) {
+                    if ((this.gncStore[scopeName] || {})[nRef]) return false
                 }
             }
 
             // set new cache scope
-            if (!this.gncStore[name]) {
-                this.gncStore[name] = {
-                    [nRef]: {data,timestamp:this.timestamp()}
+            if (!this.gncStore[scopeName]) {
+                this.gncStore[scopeName] = {
+                    [nRef]: { data, timestamp: this.timestamp() }
                 }
 
                 this.gncStore = Object.assign({}, this.gncStore)
-                if (this.setCacheStoreType(name, nRef).length < 1) {
+
+                //NOTE  this section sets up `global.GNC` if storeType==='GLOBAL
+                if (this.setCacheStoreType(scopeName, nRef).length < 1) {
                     if (this.debug) warn('[setCacheStoreType]', 'did not return correct storeType setting')
                     return false
                 }
 
+                // reduce our store per user configs: {keepPerTotal,keepPerScope} 
+                this.reduceGncStore(null)
                 return true
             }
 
             // update cache scope
-            if (this.gncStore[name]) {
-                this.gncStore[name][nRef] = {data,timestamp:this.timestamp()}
+            if (this.gncStore[scopeName]) {
+                this.gncStore[scopeName][nRef] = { data, timestamp: this.timestamp() }
                 this.gncStore = Object.assign({}, this.gncStore)
 
-                if (this.setCacheStoreType(name, nRef).length < 1) {
+                if (this.setCacheStoreType(scopeName, nRef).length < 1) {
                     if (this.debug) warn('[setCacheStoreType]', 'did not return correct storeType setting')
                     return false
                 }
+                this.reduceGncStore(null)
                 return true
             }
 
@@ -159,39 +96,90 @@ module.exports = () => {
          * Available cache by name and ref, both are required
          * - to get related cache for example: your functional method properties where the same as previously so we should be able to grab last cached.
          * - depending on `{settings.storeType}` either `LOCAL` or `GLOBAL` will be accessed to check data! 
-         * @param name scope object cache name
-         * @param ref helps to target desired cache from scoped Object by: `gncStore[name][ref]`
+         * @param scopeName scope object cache name
+         * @param propsRef helps to target desired cache from scoped Object by: `gncStore[name][ref]`
          * @returns {*} any, but undefind if entries were invalid, and undefind when no cache found
         */
-        $getCache(name, ref) {
+        $getCache(scopeName, propsRef) {
 
-            if (!this.validName(name)) {
+            if (!this.validName(scopeName)) {
                 if (this.debug) onerror('[getCache]', 'invalid conventional function name, or illegal chars provided')
                 return undefined
             }
 
-            let nRef = this.genRef(ref)
+            let nRef = this.genRef(propsRef)
             if (!nRef) return undefined
 
             if (this.settings.storeType === 'LOCAL') {
-                if (this.gncStore[name]) {
-                    if (this.gncStore[name][nRef]) {
-                        if (this.debug) log(`[getCache]','available for name: ${name}[ref]`)
-                        return this.gncStore[name][nRef].data
+                if (this.gncStore[scopeName]) {
+                    if (this.gncStore[scopeName][nRef]) {
+
+                        if (this.debug) log(`[getCache]','available for name: ${scopeName}[ref]`)
+                        return this.gncStore[scopeName][nRef].data
                     }
                 }
                 return undefined
             }
 
             if (this.settings.storeType === 'GLOBAL') {
-                if (global.GNC[name]) {
-                    if (global.GNC[name][nRef]) {
-                        if (this.debug) log(`[getCache]','available for name: ${name}[ref]`)
-                        return global.GNC[name][nRef].data
+
+                if(!global.GNC) {
+                    if (this.debug) log(`[getCache]','no global.GNC available`)
+                    return undefined
+                }
+
+                if (global.GNC[scopeName]) {
+                    if (global.GNC[scopeName][nRef]) {
+                        if (this.debug) log(`[getCache]','available for name: ${scopeName}[ref]`)
+                        return global.GNC[scopeName][nRef].data
                     }
                 }
                 return undefined
             }
+        }
+
+
+        /** 
+         * - get all data from scope
+         * @param {String} scopeName
+         * @param {boolean} asArray when true will return only data[] as an array in the order they were created
+         * @returns `{[ref]: {data,timestamp},... }`
+        */
+        $getScope(scopeName,asArray=false){
+            if (!this.validName(scopeName)) {
+                if (this.debug) onerror('[getScope]', 'invalid conventional function name, or illegal chars provided')
+                return undefined
+            }
+
+            if (this.settings.storeType === 'LOCAL') {
+                if(asArray){
+                    return Object.entries(this.gncStore[scopeName]).reduce((n,[ref,item])=>{
+                            n.push(item.data)
+                            return n
+                    },[]).filter(n=>!!n)
+                } else return this.gncStore[scopeName]
+              
+            }
+
+            if (this.settings.storeType === 'GLOBAL') {
+                // make sure global.GNC exists and was set
+                if (global.GNC) {
+                    if (asArray) {
+                        return Object.entries(global.GNC[scopeName]).reduce((n, [ref, item]) => {
+                            n.push(item.data)
+                            return n
+                        }, []).filter(n => !!n)
+                    } else return global.GNC[scopeName]
+                }
+                return undefined
+            }
+        }
+
+        /** 
+         * - get all Cache currently stored
+        */
+        $getAll(){
+            return this.isFalsy
         }
     }
 }

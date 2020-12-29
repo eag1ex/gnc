@@ -9,7 +9,7 @@ exports.encode = (text) => {
     const bytes = utf8.encode(text)
     const encoded = base64.encode(bytes)
     return encoded
-}
+} 
 
 exports.sortObject = (obj = {}) => {
     return Object.keys(obj).sort().reduce((o, key) => {               
