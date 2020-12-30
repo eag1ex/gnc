@@ -20,8 +20,8 @@ const GNC = require('global-node-cache')() // require('./index')()
 
 let debug = false // will enable more detailed output, to help debug
 let opts = {
-    keepPerTotal: 1, // how much cache to keep per total, checked on every $setCache call
-    keepPerScope: 1, // how much cache to keep per each scope, it is also evaluate first and before keepPerTotal
+    keepPerTotal: 5, // how much cache to keep per total, checked on every $setCache call
+    keepPerScope: 5, // how much cache to keep per each scope, it is also evaluate first and before keepPerTotal
     scopedRefMaxLength: 100,
     storeType: 'GLOBAL' // GLOBAL, or LOCAL
 }
