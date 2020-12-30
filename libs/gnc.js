@@ -8,7 +8,7 @@ module.exports = () => {
     const Libs = require('./gnc.libs')()
     // TODO add data expiry and max slots per scoped items, to help with maintaining memory efficiency
 
-    return class GNC extends Libs {
+    class _GNC extends Libs {
         constructor(opts, debug) {
             super(opts, debug)
         }
@@ -187,5 +187,40 @@ module.exports = () => {
             }
 
         }
+    }
+
+    return class GNC extends _GNC {
+        constructor(opts, debug) {
+            super(opts, debug)
+        }
+
+        /**
+         * @alias $getCache
+        */
+        $get(...args) {
+            return super.$getCache(...args)
+        }
+
+        /** 
+         * @alias $setCache
+        */
+        $set(...args) {
+            return super.$setCache(...args)
+        }
+
+        /** 
+         * @alias $getAll
+        */
+        $all(...args) {
+            return super.$getAll(...args)
+        }
+
+        /** 
+         * @alias $getScope
+        */
+        $scope(...args) {
+            return super.$getScope(...args)
+        }
+
     }
 }

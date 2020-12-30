@@ -1,4 +1,8 @@
 
+/** 
+ * - Technical in detail use
+*/
+
 const { log, warn } = require('x-utils-es/umd')
 const GNC = require('./index')()
 
@@ -68,3 +72,4 @@ log({ $getAll: gnc.$getAll() }) //  return all available cache
 let gn2 = new GNC(opts, debug) 
 log({ $getCache2:  gn2.$getCache('fnTwo',propFour)  } )
 // etc
+

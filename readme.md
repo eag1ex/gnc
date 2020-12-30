@@ -1,5 +1,5 @@
 ### Global Node Cache (GNC)
-Allow storing processed, repeat processed data, initialized classes on to global or local variable
+Allow storing repeat process data, initialized classes on to global or local variable
 - Global variable: node `global.GNC={}`
 - local variable: node `const GNC={}` stored at top of application scope
 
@@ -9,7 +9,7 @@ Allow storing processed, repeat processed data, initialized classes on to global
 
 
 ### Example:
-- More examples in `./examples.js`
+- More examples in `./example.one.js` and `./example.two.js`
 
 ```js
 
@@ -48,6 +48,29 @@ gnc.$getAll()
             timestamp: 1609332760702 } } } 
 
  */
+
+
+
+// practical example, more details in `./example.two.js`
+function a(){
+    let cache = gnc.$get('fn_a', Object.values(arguments)) 
+    if(cache) {
+        console.log('fn_a/ calling from cache')       
+        return cache // same data
+    }
+
+     console.log('fn_a/initial')
+    // else do this if not yet set or different
+    let logic = (()=> 1+1)() // some logical operator
+    gnc.$set('fn_a', Object.values(arguments),logic)
+    return logic 
+}
+
+a(1,2,3); // initial
+a(1,2,3); // call from cache
+a(1,2,3); // call from cache
+
+
 
 // new instance 
 let gnc2 = new GNC(opts, debug) // if opts.storeType==='GLOBAL'
@@ -88,18 +111,29 @@ Cache is monitored for its use and consumption, always latest cache is kept and 
 
 ### methods
 
-- `(get) gncStore /=> $getAll()`: returns all available data in the current store, example: `{[scopeName][propsRef],[scopeName][propsRef]}`
 
-- `$setCache(scopeName,propsRef,data)`: stores cache to gncStore
+
+- `$setCache(scopeName,propsRef,data) /> $set()`: stores cache to gncStore
     * `scopeName`: defines name of cache scope, in which you wish to store data. `gncStore[scopeName]={}`
     * `propsRef`:  JSON.stringifies properties that are used to return provided data output, can use any except: `""` and `undefined`, example:`{any:'data'},[1,2,3],true,false,0,1,2,'hello world'`.  `gncStore[scopeName][propsRef]=data`
     * `data`: data you want to cache is stored in `gncStore[scopeName][propsRef]=data`
 
-- `$getCache(scopeName,propsRef)`: return existing data or undefined
+- `$getCache(scopeName,propsRef) /> $get()`: return existing data or undefined
     * `scopeName` the name used to create cache
     * `propsRef` same ref used to generate data output, if it was an object, then order does not matter, as long all properties are the same!
 
-- `$getScope(scopeName,asArray=false)`: returns all available data in current scope or undefined or []
+- `$getScope(scopeName,asArray=false) /> $scope()`: returns all available data in current scope or undefined or []
     * `asArray:false` Optional when true will return only data[] as array in the order created.
 
-- `$getAll()` : returns all available cache   from either `GLOBAL` or `LOCAL`
+- `(get) gncStore /=> $getAll()`: returns all available data in the current store, example: `{[scopeName][propsRef],[scopeName][propsRef]}`
+
+- `$getAll() /> $all()` : returns all available cache   from either `GLOBAL` or `LOCAL`
+
+
+### methods/aliases
+Can use either original or alias conventions 
+
+-  `$set() === $setCache()`
+-  `$get() === $getCache()`
+-  `$scope() === $getScope()`
+-  `$all() === $getAll()`
