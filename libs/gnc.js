@@ -13,7 +13,6 @@ module.exports = () => {
             super(opts, debug)
         }
 
-      
 
         /** 
          * set your new cache to variable
@@ -123,7 +122,7 @@ module.exports = () => {
 
             if (this.settings.storeType === 'GLOBAL') {
 
-                if(!global.GNC) {
+                if (!global.GNC) {
                     if (this.debug) log(`[getCache]','no global.GNC available`)
                     return undefined
                 }
@@ -145,26 +144,28 @@ module.exports = () => {
          * @param {boolean} asArray when true will return only data[] as an array in the order they were created
          * @returns `{[ref]: {data,timestamp},... }`
         */
-        $getScope(scopeName,asArray=false){
+        $getScope(scopeName, asArray = false) {
             if (!this.validName(scopeName)) {
                 if (this.debug) onerror('[getScope]', 'invalid conventional function name, or illegal chars provided')
                 return undefined
             }
 
             if (this.settings.storeType === 'LOCAL') {
-                if(asArray){
-                    return Object.entries(this.gncStore[scopeName]).reduce((n,[ref,item])=>{
-                            n.push(item.data)
-                            return n
-                    },[]).filter(n=>!!n)
+                if (asArray) {
+                    if (!this.gncStore[scopeName]) return undefined
+                    return Object.entries(this.gncStore[scopeName]).reduce((n, [ref, item]) => {
+                        n.push(item.data)
+                        return n
+                    }, []).filter(n => !!n)
                 } else return this.gncStore[scopeName]
-              
+
             }
 
             if (this.settings.storeType === 'GLOBAL') {
                 // make sure global.GNC exists and was set
                 if (global.GNC) {
                     if (asArray) {
+                        if (!global.GNC[scopeName]) return undefined
                         return Object.entries(global.GNC[scopeName]).reduce((n, [ref, item]) => {
                             n.push(item.data)
                             return n
@@ -178,8 +179,15 @@ module.exports = () => {
         /** 
          * - get all Cache currently stored
         */
-        $getAll(){
-            return this.isFalsy
+        $getAll() {
+            if (this.settings.storeType === 'LOCAL') {
+                return this.gncStore
+            }
+
+            if (this.settings.storeType === 'GLOBAL') {
+                return global.GNC
+            }
+
         }
     }
 }

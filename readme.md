@@ -8,6 +8,16 @@ Allow storing processed, repeat processed data, initialized classes on to global
 - store smare repeated tasts to cache
 
 
+### Example:
+- More examples in `./examples.js`
+
+```js
+
+// 
+```
+
+
+
 ### setup/options
 
 ```js
@@ -28,10 +38,11 @@ let gnc = new GNC(opts, debug)
 
 - `opt.storeType:string`: two types are available `GLOBAL`: Uses node `global.GNC={}` variable to store your cache, this way every time your re-initiate the class module in the same node process your data still remains. `LOCAL`: only exists in current class instance.
 
+
+### Caching limits
+Cache is monitored for its use and consumption, always latest cache is kept and limits are deleted, Last created cache becomes the latest entry.
 - `opt.keepPerScope:number`: How much cache to keep on each scope, defaults to latest 5 entries.
-
 - `opt.keepPerTotal:number`: How much cache to keep on all scopes, defaults to latest 5 entries.
-
 - keepPerScope is evaluated first and keepPerTotal second, all on every `$setCache` call
 
 
@@ -49,6 +60,6 @@ let gnc = new GNC(opts, debug)
     * `propsRef` same ref used to generate data output, if it was an object, then order does not matter, as long all properties are the same!
 
 - `$getScope(scopeName,asArray=false)`: returns all available data in current scope or undefined or []
-    * `asArray:false` Optional when true will return only data[] as array in the order they were created.
+    * `asArray:false` Optional when true will return only data[] as array in the order created.
 
 - `$getAll()` : returns all available cache   from either `GLOBAL` or `LOCAL`

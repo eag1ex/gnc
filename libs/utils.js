@@ -18,6 +18,8 @@ exports.sortObject = (obj = {}) => {
     }, {}) 
 }
 
+exports.getArgs = (args)=>Object.values(args)
+
 /** 
  * get check node global value, sould only be available when using 'GLOBAL' in our GNC/storeType
  * @param {string} name valid name 

@@ -1,49 +1,70 @@
 
-const { log } = require('x-utils-es/umd')
-const { getGlobal } = require('./libs/utils')
+const { log, warn } = require('x-utils-es/umd')
 const GNC = require('./index')()
 
 let opts = {
-   // keepPerTotal: 5,
-   //  keepPerScope:1,
+    keepPerTotal: 1, // how mutch cache to keep per total, checked on every $setCache call
+    keepPerScope: 5, // how mutch cache to keep per each scope, it is also evalueded first and before keepPerTotal
     scopedRefMaxLength: 100,
-    storeType: 'LOCAL'
+    storeType: 'GLOBAL' // GLOBAL, or LOCAL
 }
 
-let gnc = new GNC(opts, false)
+let debug = false // will enable more detailed output, to help debug
+let gnc = new GNC(opts, debug)
 
-// NOTE for objects as long as all same values exist, the order does NOT matter
-// BUT! For arrays order does matter!
-let props = 0//{ prop: 1, name: 'abc', values: [1, 2, 3] }
-let prop2s = { name: 'a', values: [1, 2, 3], prop: 1 }
-let prop3s = { name: 'ab', values: [1, 2, 3], prop: 2 }
-let prop4s = { name: 'abc', values: [1, 2, 3], prop: 3 }
+// initial reference defines the scope name
+// let scopeName = 'fnOne'
 
-if (gnc.$setCache('1fn1', props, { A: [1, 3, 4, { a: 1, b: 2 }] })) {
-    log('setCache is set')
+/** 
+ * Regarding same `propsRef` > for objects as long as same values exist order does NOT matter, 
+ * except for arrays where it does!
+ * 
+ * example of a function arguments / property refs  > function(){ arguments } 
+ * these props are converted to a string reference which helps to find inner scoped data
+*/
+let propsOne = 0 //{ prop: 1, name: 'abc', values: [1, 2, 3] }
+let propsTwo = { name: 'a', values: [1, 2, 3], prop: 1 }
+let propsThree = { name: 'ab', values: [1, 2, 3], prop: 2 }
+let propFour = { name: 'abc', values: [1, 2, 3], prop: 3 }
+
+// caching data output examples
+let dataOutput_1 = { A: [1, 3, 4, { a: 1, b: 2 }] }
+let dataOutput_2 = { B: [5, 6, 7, { c: 1, d: 2 }] }
+let dataOutput_3 = { C: [8, 9, 10, { e: 1, f: 2 }] }
+let dataOutput_4 = { D: [11, 12, 13, { g: 1, h: 2 }] }
+
+// will return undefined, as nothing is yet available
+// log({ $getCache:  gnc.$getCache('fnOne',propsTwo)  } ) 
+
+// setting cache with scopeName and property reference (raw properties), and setting data desired outputs
+if (gnc.$setCache('fnOne', propsOne, dataOutput_1)) {
+    log('fnOne/setCache set')
 }
 
-if (gnc.$setCache('1fn1', prop2s, { B: [5, { a: 1, b: 2 }] })) {
-    log('setCache is set')
+if (gnc.$setCache('fnOne', propsTwo, dataOutput_2)) {
+    log('fnOne/setCache set')
 }
 
-// if (gnc.$setCache('1fn2', prop2s, { c: [5, { a: 1, b: 2 }] })) {
-//     log('setCache is set')
-// }
+if (gnc.$setCache('fnTwo', propsThree, dataOutput_3)) {
+    log('fnTwo/setCache set')
+}
 
-// if (gnc.$setCache('1fn1', prop2s, { d: [5, { a: 1, b: 2 }] })) {
-//     log('setCache is set')
-// }
+if (gnc.$setCache('fnTwo', propFour, dataOutput_4)) {
+    log('fnTwo/setCache set')
+}
 
-// if (gnc.$setCache('1fn1', prop3s, { D: [1, 3, { a: 1, b: 2 }] })) {
-//     log('setCache is set')
-// }
 
-// if (gnc.$setCache('1fn1', prop4s, { D: [1, { a: 1, b: 2 }] })) {
-//     log('setCache is set')
-// }
+// accesing cached data by scopeName and raw property reference
 
-log(gnc.$getScope('1fn1',true))
-//log(gnc.gncStore)
-//log(gnc.$getCache('1fn1',prop2s))
-//log(getGlobal('1fn1', gnc.genRef(prop2s))) // should be the same as gnc.$getCache with storeType==='GLOBAL'
+log({ $getCache: gnc.$getCache('fnOne', propsTwo) }) // return specific scope/reference cache by fn/arguments
+log({ $getScope: gnc.$getScope('fnOne', true) }) // return all cached data for scopeName: fnOne, (optionally {true} means: return only data[] as array in the order created )
+log({ $getAll: gnc.$getAll() }) //  return all available cache 
+
+
+
+/**
+ * NOTE if we re-declared the instance with `GLOBAL` setting on the same process, will give us access to the same cache and references!
+*/
+let gn2 = new GNC(opts, debug) 
+log({ $getCache2:  gn2.$getCache('fnTwo',propFour)  } )
+// etc

@@ -64,7 +64,15 @@ module.exports = () => {
             let scopes = {} // name of all outter scopes ()
             let innerScopeRefs = {}
             let innerScopeIndex = {}
-            let storeEntriesArr = Object.entries(this._gncStore).reduce((n, [name, val], inx, all) => {
+
+            let gncStore
+            if(this.settings.storeType ==='LOCAL') gncStore = this._gncStore
+            if(this.settings.storeType ==='GLOBAL') gncStore = global.GNC
+            if(!gncStore) return 0
+
+          
+
+            let storeEntriesArr = Object.entries(gncStore).reduce((n, [name, val], inx, all) => {
 
                 Object.entries(val).map(([ref, item]) => {
                     if (!ref) return n
@@ -83,6 +91,12 @@ module.exports = () => {
 
                 return n
             }, []).filter(n => !!n)
+
+            // avoid resources
+            if(this.settings.keepPerTotal===1 && storeEntriesArr.length===1){
+                return 0
+            }
+
 
             // latest entries first
             storeEntriesArr.sort((a, b) => b.timestamp - a.timestamp)
@@ -116,20 +130,23 @@ module.exports = () => {
             let deleted = 0
             for (let inx = 0; inx < entries.length; inx++) {
                 let { name, ref, data, timestamp } = entries[inx]
-                if (this._gncStore[name]) {
-                    if (this._gncStore[name][ref]) {
-                        delete this._gncStore[name][ref]
-                        if (this.settings.storeType === 'LOCAL') deleted++
+
+                if (this.settings.storeType === 'LOCAL') {
+                    if (this._gncStore[name]) {
+                        if (this._gncStore[name][ref]) {
+                            delete this._gncStore[name][ref]
+                            deleted++
+                        }
+                        // recycle any empty scopes as well
+                        if (isFalsy(this._gncStore[name])) delete this._gncStore[name]
                     }
-                    // recycle any empty scopes as well
-                    if (isFalsy(this._gncStore[name])) delete this._gncStore[name]
                 }
+               
 
                 if (this.settings.storeType === 'GLOBAL') {
-                    if (global.GN) {
+                    if (global.GNC) {
 
                         if (global.GNC[name]) {
-
                             if (global.GNC[name][ref]) {
                                 delete global.GNC[name][ref]
                                 deleted++
