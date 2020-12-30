@@ -9,7 +9,7 @@
 Allow storing repeat process data, initialized classes on to global or local variable
 
 - Global variable: node `global.GNC={}`
-- local variable: node `const GNC={}` stored at top of application scope
+- Local variable:  stored in current class instance
 
 
 ### Why use it
@@ -112,7 +112,7 @@ let gnc = new GNC(opts, debug)
 
 ```
 
-- `opt.scopedRefMaxLength`: Each propsRef is converted to a string via JSON.stringify > utf8/base64. If provided method/function properties are too large you can set a limit. Since Each ref is an object property, so it is not recommended to keep then large! Default is set to 100 when not set, or less then 10!
+- `opt.scopedRefMaxLength`: Each propsRef is converted to a string via JSON.stringify > utf8/base64. If provided method/function properties are too large you can set a limit. Since Each ref is an object property, so it is not recommended to keep them large! Default is set to 100 when not set, or less then 10!
 
 - `opt.storeType:string`: two types are available `GLOBAL`: Uses node `global.GNC={}` variable to store your cache, this way every time your re-initiate the class module in the same node process your data still remains. `LOCAL`: only exists in current class instance.
 
@@ -122,7 +122,7 @@ Cache is monitored for its use and consumption, always latest cache is kept and 
 
 - `opt.keepPerScope:number`: How much cache to keep on each scope, defaults to latest 5 entries.
 - `opt.keepPerTotal:number`: How much cache to keep on all scopes, defaults to latest 5 entries.
-- keepPerScope is evaluated first and keepPerTotal second, all on every `$setCache` call
+- keepPerScope is evaluated first and keepPerTotal second, all is checked on every `$setCache` call
 
 
 #### methods
