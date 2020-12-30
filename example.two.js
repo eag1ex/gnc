@@ -6,6 +6,12 @@
 const { log, warn } = require('x-utils-es/umd')
 const GNC = require('./index')()
 
+//  NOTE will override below opts only of in storeType = GLOBAL
+// global.GNC_SETTINGS = {
+//     scopedRefMaxLength:200, // default 100
+//     keepPerScope:20, // default 5
+//     keepPerTotal:20 // default 5
+// }
 
 let opts = {
     keepPerTotal: 5, // how much cache to keep per total, checked on every $setCache call

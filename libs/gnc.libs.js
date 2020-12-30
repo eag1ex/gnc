@@ -20,6 +20,7 @@ module.exports = () => {
                  * `when LOCAL`, we save cache to LOCAL variable, this option is more secure but less flexible since we can only access out cache via class instance
                 */
                 storeType: opts.storeType || 'LOCAL', // GLOBAL OR LOCAL
+                //globalScopeRef:opts.globalScopeRef===undefined ? undefined: opts.globalScopeRef.toString(),// this is only needed when using 'GLOBAL' scope to help identify multiple GNC instances already running
                 /** 
                  * max allowed size of each {ref} reference pointing to each data in scope
                  *  each reference is generated thru process: JSON.stringify > encode/bytes > to string, and that produced max allowed size, it is useful when your functional properties are too big to be used as reference pointers, overall it is not good to keep large object properties anyway!
@@ -27,6 +28,9 @@ module.exports = () => {
                 */
                 scopedRefMaxLength: (opts.scopedRefMaxLength < 10) ? 100 : !opts.scopedRefMaxLength ? 100 : opts.scopedRefMaxLength
             }
+
+            // check if we have global.GNC_SETTINGS available IF on current storeType=GLOBAL
+            this.gncGlobalSettings()
 
             if (!isNumber(this.settings.scopedRefMaxLength)) {
                 throw ('settings.scopedRefMaxLength must be a number')
@@ -40,10 +44,17 @@ module.exports = () => {
                 throw ('wrong storeType selected, available are: LOCAL or GLOBAL')
             }
 
+            // TODO  ?
+            // if(this.settings.storeType==='GLOBAL' && !this.settings.globalScopeRef){
+            //     throw('we need uniq reference from {globalScopeRef} on storeType=GLOBAL')
+            // }
+
             if (this.debug) {
                 log(`GNC accesing cache storeType: ${this.settings.storeType}`)
             }
         }
+
+
 
         set gncStore(v) {
             this._gncStore = v
@@ -51,6 +62,31 @@ module.exports = () => {
 
         get gncStore() {
             return this._gncStore
+        }
+
+        /** 
+         * - check/update/merge with GNC_SETTINGS where applicable
+         * to allow control of 'GLOBAL' cache  global.GNC_SETTINGS take priority over this.settings (when available)
+         * - when there is no specific GNC_SETTINGS available this.settings takes priority
+         * - global.GNC_SETTINGS can only be set outsite of the class, and preferable at top of any application scope to be picked up after gnc is initialized
+        */
+        gncGlobalSettings(){
+
+            if(this.settings.storeType==='GLOBAL'){
+
+                if(isObject(global.GNC_SETTINGS)){
+                    if(isNumber(global.GNC_SETTINGS.keepPerTotal )){
+                        this.settings.keepPerTotal = global.GNC_SETTINGS.keepPerTotal 
+                    }
+                    if(isNumber(global.GNC_SETTINGS.keepPerScope )){
+                        this.settings.keepPerScope = global.GNC_SETTINGS.keepPerScope 
+                    }
+
+                    if(isNumber(global.GNC_SETTINGS.scopedRefMaxLength )){
+                        this.settings.scopedRefMaxLength = global.GNC_SETTINGS.scopedRefMaxLength 
+                    }                  
+                }
+            }
         }
 
         /** 

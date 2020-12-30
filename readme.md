@@ -100,6 +100,13 @@ gnc2.$getCache('fnOne', props) // then scopeName/propsRef will return same cache
 
 ```js
 
+// these can be set and will be intercepted on each gnc class with opts.storeType=GLOBAL
+global.GNC_SETTINGS = {
+    scopedRefMaxLength:50, // default 100
+    keepPerScope:20, // default 5
+    keepPerTotal:20 // default 5
+}
+
 let debug = false
 let opts = {
     scopedRefMaxLength:50, // default 100
@@ -115,6 +122,11 @@ let gnc = new GNC(opts, debug)
 - `opt.scopedRefMaxLength`: Each propsRef is converted to a string via JSON.stringify > utf8/base64. If provided method/function properties are too large you can set a limit. Since Each ref is an object property, so it is not recommended to keep them large! Default is set to 100 when not set, or less then 10!
 
 - `opt.storeType:string`: two types are available `GLOBAL`: Uses node `global.GNC={}` variable to store your cache, this way every time your re-initiate the class module in the same node process your data still remains. `LOCAL`: only exists in current class instance.
+
+
+
+#### GLOBAL vs LOCAL cache
+We have an option to use gnc as a global or local cache manager. But when the `GLOBAL` opt is set we can also control all of currently running gnc apps with `global.GNC_SETTINGS = {scopedRefMaxLength,keepPerScope,keepPerTotal}` only 3 options can be set, and will offset any locally set options as long as declared at top of your application stack, before any gnc are initialized!
 
 
 #### Caching limits
