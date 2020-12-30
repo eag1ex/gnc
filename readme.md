@@ -1,8 +1,16 @@
 ### Global Node Cache (GNC)
+####  [ Developed by Eaglex ](http://eaglex.net)
+
+##### LICENSE
+* LICENCE: CC BY-NC-ND
+* SOURCE: _(https://creativecommons.org/licenses/by-nc-nd/4.0/)_
+
+### About
 Allow storing repeat process data, initialized classes on to global or local variable
 
 - Global variable: node `global.GNC={}`
 - local variable: node `const GNC={}` stored at top of application scope
+
 
 ### Why use it
 
@@ -10,7 +18,11 @@ Allow storing repeat process data, initialized classes on to global or local var
 - store repeated data outputs to cache
 
 
-### Example:
+#### Install
+- `npm i` 
+
+
+#### Example:
 
 - More examples in `./example.one.js` and `./example.two.js`
 
@@ -84,7 +96,7 @@ gnc2.$getCache('fnOne', props) // then scopeName/propsRef will return same cache
 
 
 
-### setup/options
+#### setup/options
 
 ```js
 
@@ -105,14 +117,15 @@ let gnc = new GNC(opts, debug)
 - `opt.storeType:string`: two types are available `GLOBAL`: Uses node `global.GNC={}` variable to store your cache, this way every time your re-initiate the class module in the same node process your data still remains. `LOCAL`: only exists in current class instance.
 
 
-### Caching limits
+#### Caching limits
 Cache is monitored for its use and consumption, always latest cache is kept and limits are deleted, Last created cache becomes the latest entry.
+
 - `opt.keepPerScope:number`: How much cache to keep on each scope, defaults to latest 5 entries.
 - `opt.keepPerTotal:number`: How much cache to keep on all scopes, defaults to latest 5 entries.
 - keepPerScope is evaluated first and keepPerTotal second, all on every `$setCache` call
 
 
-### methods
+#### methods
 
 - `$setCache(scopeName,propsRef,data) /> $set()`: stores cache to gncStore
     * `scopeName`: defines name of cache scope, in which you wish to store data. `gncStore[scopeName]={}`
@@ -131,10 +144,23 @@ Cache is monitored for its use and consumption, always latest cache is kept and 
 - `$getAll() /> $all()` : returns all available cache   from either `GLOBAL` or `LOCAL`
 
 
-### methods/aliases
+#### methods/aliases
 Can use either original or alias conventions 
 
 -  `$set() === $setCache()`
 -  `$get() === $getCache()`
 -  `$scope() === $getScope()`
 -  `$all() === $getAll()`
+
+
+
+&nbsp;
+&nbsp;
+
+
+
+#### Contact
+Have questions, or would like to submit feedback, [contact eaglex.net](https://eaglex.net/app/contact?product=gnc)
+
+
+#### Thank you
