@@ -3,7 +3,7 @@ const { log, warn } = require('x-utils-es/umd')
 const GNC = require('./index')()
 
 let opts = {
-    keepPerTotal: 1, // how much cache to keep per total, checked on every $setCache call
+    keepPerTotal: 5, // how much cache to keep per total, checked on every $setCache call
     keepPerScope: 5, // how much cache to keep per each scope, it is also evaluate first and before keepPerTotal
     scopedRefMaxLength: 100,
     storeType: 'GLOBAL' // GLOBAL, or LOCAL

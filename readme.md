@@ -13,7 +13,47 @@ Allow storing processed, repeat processed data, initialized classes on to global
 
 ```js
 
-// 
+const GNC = require('global-node-cache')() // require('./index')()
+
+let debug = false // will enable more detailed output, to help debug
+let opts = {
+    keepPerTotal: 1, // how much cache to keep per total, checked on every $setCache call
+    keepPerScope: 1, // how much cache to keep per each scope, it is also evaluate first and before keepPerTotal
+    scopedRefMaxLength: 100,
+    storeType: 'GLOBAL' // GLOBAL, or LOCAL
+}
+
+let gnc = new GNC(opts, debug)
+
+
+let scopeName = 'fnOne'
+let props = { name: 'a', values: [1, 2, 3], prop: 1 }
+let dataOutput = { A: [1, 3, 4, { a: 1, b: 2 }] }
+
+if ( gnc.$setCache(scopeName, props, dataOutput) )  console.log('fnOne/setCache set')
+
+// set or not give us output of fnOne. Returns > dataOutput
+gnc.$getCache(scopeName, props) // { A: [1, 3, 4, { a: 1, b: 2 }] }
+
+// return all data as array[] from scopeName: fnOne
+gnc.$getScope(scopeName, true) // [ { A: [1, 3, 4, { a: 1, b: 2 }] }]
+
+// return raw data from all scopes
+gnc.$getAll()
+/**
+ * example output:
+   { fnOne:
+    { 'eyJuYW1lIjoiYSIsInByb3AiOjEsInZhbHVlcyI6WzEsMiwzXX0=':
+        { data: { A: [ 1, 3, 4, [Object], [length]: 4 ] },
+            timestamp: 1609332760702 } } } 
+
+ */
+
+// new instance 
+let gnc2 = new GNC(opts, debug) // if opts.storeType==='GLOBAL'
+gnc2.$getCache('fnOne', props) // then scopeName/propsRef will return same cache
+
+
 ```
 
 
