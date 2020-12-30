@@ -13,7 +13,7 @@ exports.encode = (text) => {
 
 exports.sortObject = (obj = {}) => {
     return Object.keys(obj).sort().reduce((o, key) => {               
-        o[key] = obj[key]  
+        if(obj[key]!==undefined) o[key] = obj[key]  
         return o  
     }, {}) 
 }
