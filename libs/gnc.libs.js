@@ -1,6 +1,6 @@
 
 module.exports = () => {
-    const { log, onerror, warn, isString, isObject, isNumber,isFalsy } = require('x-utils-es/umd')
+    const { log, onerror, warn, isString, isObject, isNumber, isFalsy } = require('x-utils-es/umd')
     const { encode, sortObject } = require('./utils')
     return class GNClibs {
 
@@ -8,9 +8,9 @@ module.exports = () => {
 
             this.debug = debug
             this._gncStore = {}
-           
+
             this.settings = {
-              
+
                 // to not overload the system only keep totals of data, to be updated on every change 
                 keepPerTotal: opts.keepPerTotal === undefined ? 5 : opts.keepPerTotal, // how many items to keep in total
                 keepPerScope: opts.keepPerScope === undefined ? 5 : opts.keepPerScope, // how many items to keep per scope
@@ -22,10 +22,10 @@ module.exports = () => {
                 storeType: opts.storeType || 'LOCAL', // GLOBAL OR LOCAL
                 /** 
                  * max allowed size of each {ref} reference pointing to each data in scope
-                 *  each reference is genereted thru process: JSON.stringify > encode/bytes > to string, and that produced max allowed size, it is usefull when your functional properties are too big to be used as reference pointers, overall it is not good to keep large object properies anyway!
-                 * example : gncStore[name][ref][{yourData}] === gncStore[functionName:orSimilar][sdfklsudf765dsfgsdsde==--][{yourdate}]
+                 *  each reference is generated thru process: JSON.stringify > encode/bytes > to string, and that produced max allowed size, it is useful when your functional properties are too big to be used as reference pointers, overall it is not good to keep large object properties anyway!
+                 * example : gncStore[name][ref][{yourData}] === gncStore[functionName:orSimilar][sdfklsudf765dsfgsdsde==--][{yourData}]
                 */
-                scopedRefMaxLength: (opts.scopedRefMaxLength < 10 ) ? 100 : !opts.scopedRefMaxLength ? 100 : opts.scopedRefMaxLength
+                scopedRefMaxLength: (opts.scopedRefMaxLength < 10) ? 100 : !opts.scopedRefMaxLength ? 100 : opts.scopedRefMaxLength
             }
 
             if (!isNumber(this.settings.scopedRefMaxLength)) {
@@ -39,12 +39,12 @@ module.exports = () => {
             if (['LOCAL', 'GLOBAL'].indexOf(this.settings.storeType) === -1) {
                 throw ('wrong storeType selected, available are: LOCAL or GLOBAL')
             }
-             
+
             if (this.debug) {
                 log(`GNC accesing cache storeType: ${this.settings.storeType}`)
             }
         }
-  
+
         set gncStore(v) {
             this._gncStore = v
         }
@@ -58,7 +58,7 @@ module.exports = () => {
          * for {keepPerTotal} or {keepPerScope} and reduces the gncStore overloads to limit memory overloads
          * @param {String} byRef makes sure nto tu delete last entry
         */
-        reduceGncStore(byRef=null) {
+        reduceGncStore(byRef = null) {
 
             // get timestamps
             let scopes = {} // name of all outter scopes ()
@@ -66,11 +66,11 @@ module.exports = () => {
             let innerScopeIndex = {}
 
             let gncStore
-            if(this.settings.storeType ==='LOCAL') gncStore = this._gncStore
-            if(this.settings.storeType ==='GLOBAL') gncStore = global.GNC
-            if(!gncStore) return 0
+            if (this.settings.storeType === 'LOCAL') gncStore = this._gncStore
+            if (this.settings.storeType === 'GLOBAL') gncStore = global.GNC
+            if (!gncStore) return 0
 
-          
+
 
             let storeEntriesArr = Object.entries(gncStore).reduce((n, [name, val], inx, all) => {
 
@@ -93,7 +93,7 @@ module.exports = () => {
             }, []).filter(n => !!n)
 
             // avoid resources
-            if(this.settings.keepPerTotal===1 && storeEntriesArr.length===1){
+            if (this.settings.keepPerTotal === 1 && storeEntriesArr.length === 1) {
                 return 0
             }
 
@@ -111,8 +111,8 @@ module.exports = () => {
                 }
                 // all scope indexes to be counted, and it keepPerTotal was set
                 // store to delete above inx
-                if ( this.settings.keepPerTotal && this.settings.keepPerTotal < inx+1) {
-                    if (this.debug) log('we have more then keepPerTotal < inx:', inx+1)
+                if (this.settings.keepPerTotal && this.settings.keepPerTotal < inx + 1) {
+                    if (this.debug) log('we have more then keepPerTotal < inx:', inx + 1)
                     return true
                 }
             })
@@ -141,7 +141,7 @@ module.exports = () => {
                         if (isFalsy(this._gncStore[name])) delete this._gncStore[name]
                     }
                 }
-               
+
 
                 if (this.settings.storeType === 'GLOBAL') {
                     if (global.GNC) {
@@ -166,7 +166,7 @@ module.exports = () => {
 
         /** 
          * @setCacheStoreType
-         * - get data from gncStore and assign it to relevent cacheType set in opts
+         * - get data from gncStore and assign it to relevant cacheType set in opts
          * @returns {Array} single array if type that was set, either ['LOCAL'] OR ['GLOBAL']
         */
         setCacheStoreType(name, nRef) {
@@ -242,13 +242,13 @@ module.exports = () => {
         /** 
          * @returns {Number} timestamp as number
         */
-        timestamp(){
+        timestamp() {
             return new Date().getTime()
         }
 
         /** 
          * Generate ref to be assigned with cache item
-         * @param rawRef: usualy and object,string or array that will be converted to json and the encoded to a string to be used as reference pointer
+         * @param rawRef: usually and object,string or array that will be converted to json and the encoded to a string to be used as reference pointer
         */
         genRef(rawRef) {
             try {
@@ -259,7 +259,7 @@ module.exports = () => {
                 if (isObject(rawRef)) {
                     rawRef = sortObject(rawRef)
                 }
-    
+
                 const jsonStr = JSON.stringify(rawRef)
                 let e = encode(jsonStr)
                 if (e === undefined || e === '') throw ('rawRef cannot be undefined or ""')

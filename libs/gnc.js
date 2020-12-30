@@ -16,10 +16,10 @@ module.exports = () => {
 
         /** 
          * set your new cache to variable
-         * @param {String} scopeName the name of this cache, usualy best to call it name of the function its used in
-         * @param {JSON/String} propsRef this param is usualy what was needed to achieve particular data output, for example when in functional methods with properties, and overtime we used the same properties< that would result in the same output
+         * @param {String} scopeName the name of this cache, usually best to call it name of the function its used in
+         * @param {JSON/String} propsRef this param is usually what was needed to achieve particular data output, for example when in functional methods with properties, and overtime we used the same properties< that would result in the same output
          * @param {*} data any data except: undefined
-         * @returns {boolean} true/false, when succesfull returns true, if not errors but data already cached return false
+         * @returns {boolean} true/false, when successful returns true, if not errors but data already cached return false
         */
         $setCache(scopeName = '', propsRef, data) {
 
@@ -41,14 +41,14 @@ module.exports = () => {
                 return false
             }
 
-            // data already exist nothig to set
+            // data already exist nothing to set
             if (this.settings.storeType === 'GLOBAL') {
                 if ((global.GNC || {})[scopeName]) {
                     if ((global.GNC[scopeName] || {})[nRef]) return false
                 }
             }
 
-            // data already exist nothig to set
+            // data already exist nothing to set
             if (this.settings.storeType === 'LOCAL') {
                 if (this.gncStore[scopeName]) {
                     if ((this.gncStore[scopeName] || {})[nRef]) return false
@@ -86,7 +86,6 @@ module.exports = () => {
                 this.reduceGncStore(null)
                 return true
             }
-
             return false
 
         }
@@ -97,7 +96,7 @@ module.exports = () => {
          * - depending on `{settings.storeType}` either `LOCAL` or `GLOBAL` will be accessed to check data! 
          * @param scopeName scope object cache name
          * @param propsRef helps to target desired cache from scoped Object by: `gncStore[name][ref]`
-         * @returns {*} any, but undefind if entries were invalid, and undefind when no cache found
+         * @returns {*} any, but undefined if entries were invalid, and undefined when no cache found
         */
         $getCache(scopeName, propsRef) {
 
@@ -158,7 +157,6 @@ module.exports = () => {
                         return n
                     }, []).filter(n => !!n)
                 } else return this.gncStore[scopeName]
-
             }
 
             if (this.settings.storeType === 'GLOBAL') {

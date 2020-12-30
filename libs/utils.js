@@ -21,7 +21,7 @@ exports.sortObject = (obj = {}) => {
 exports.getArgs = (args)=>Object.values(args)
 
 /** 
- * get check node global value, sould only be available when using 'GLOBAL' in our GNC/storeType
+ * get check node global value, should only be available when using 'GLOBAL' in our GNC/storeType
  * @param {string} name valid name 
  * @param {json/string} ref valid json string optimized by gnc.genRef(rawRef) 
  * @returns any 

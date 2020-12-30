@@ -3,8 +3,8 @@ const { log, warn } = require('x-utils-es/umd')
 const GNC = require('./index')()
 
 let opts = {
-    keepPerTotal: 1, // how mutch cache to keep per total, checked on every $setCache call
-    keepPerScope: 5, // how mutch cache to keep per each scope, it is also evalueded first and before keepPerTotal
+    keepPerTotal: 1, // how much cache to keep per total, checked on every $setCache call
+    keepPerScope: 5, // how much cache to keep per each scope, it is also evaluate first and before keepPerTotal
     scopedRefMaxLength: 100,
     storeType: 'GLOBAL' // GLOBAL, or LOCAL
 }
@@ -54,7 +54,7 @@ if (gnc.$setCache('fnTwo', propFour, dataOutput_4)) {
 }
 
 
-// accesing cached data by scopeName and raw property reference
+// accessing cached data by scopeName and raw property reference
 
 log({ $getCache: gnc.$getCache('fnOne', propsTwo) }) // return specific scope/reference cache by fn/arguments
 log({ $getScope: gnc.$getScope('fnOne', true) }) // return all cached data for scopeName: fnOne, (optionally {true} means: return only data[] as array in the order created )

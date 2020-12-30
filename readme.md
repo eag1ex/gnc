@@ -5,7 +5,7 @@ Allow storing processed, repeat processed data, initialized classes on to global
 
 ### Why use it
 - your application makes high computations, and repeated tasks that can be cached to save process/memory
-- store smare repeated tasts to cache
+- store repeated data outputs to cache
 
 
 ### Example:
