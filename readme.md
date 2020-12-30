@@ -1,14 +1,17 @@
 ### Global Node Cache (GNC)
 Allow storing repeat process data, initialized classes on to global or local variable
+
 - Global variable: node `global.GNC={}`
 - local variable: node `const GNC={}` stored at top of application scope
 
 ### Why use it
+
 - your application makes high computations, and repeated tasks that can be cached to save process/memory
 - store repeated data outputs to cache
 
 
 ### Example:
+
 - More examples in `./example.one.js` and `./example.two.js`
 
 ```js
@@ -110,8 +113,6 @@ Cache is monitored for its use and consumption, always latest cache is kept and 
 
 
 ### methods
-
-
 
 - `$setCache(scopeName,propsRef,data) /> $set()`: stores cache to gncStore
     * `scopeName`: defines name of cache scope, in which you wish to store data. `gncStore[scopeName]={}`
