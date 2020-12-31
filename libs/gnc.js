@@ -122,7 +122,7 @@ module.exports = () => {
             if (this.settings.storeType === 'GLOBAL') {
 
                 if (!global.GNC) {
-                    if (this.debug) log(`[getCache]','no global.GNC available`)
+                   // if (this.debug) log(`[getCache]','no global.GNC available`)
                     return undefined
                 }
 

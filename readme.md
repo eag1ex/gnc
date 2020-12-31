@@ -1,9 +1,11 @@
 ### Global Node Cache (GNC)
 ####  [ Developed by Eaglex ](http://eaglex.net)
 
+
 ##### LICENSE
 * LICENCE: CC BY-NC-ND
 * SOURCE: _(https://creativecommons.org/licenses/by-nc-nd/4.0/)_
+
 
 ### About
 Allow storing repeat process data, initialized classes on to global or local variable
