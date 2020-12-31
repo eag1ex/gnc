@@ -14,12 +14,13 @@ Allow storing repeat process data, initialized classes on to global or local var
 
 ### Why use it
 
-- your application makes high computations, and repeated tasks that can be cached to save process/memory
-- store repeated data outputs to cache
+- cache high computations, and repeated tasks that can be cached to save process/memory
+- store repeat data outputs to cache
+- caching repeatitive tasks
 
 
 #### Install
-- `npm i` 
+- `npm i`  
 
 
 #### Example:
